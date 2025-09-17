@@ -1,0 +1,34 @@
+---
+title: "WNBA Data Cleaning"
+author: "Nicholas Copland"
+date: "2025-09-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r}
+library(wehoop) #library to draw boxscores from
+library(dplyr)
+
+# Fetch player box score traditional for 2025 regular season
+player_box_trad_2025 <- load_wnba_player_box(seasons = 2003:2025)
+
+# Filter for only players that played in the game and logged at least a minute
+wnba = player_box_trad_2025 %>%
+  filter(did_not_play == FALSE, minutes != 0) %>%
+  select(1:7, 12:32, 46:48, 57) %>% #Select only columns that aid statistical analysis
+  group_by(athlete_display_name) %>% 
+  filter(n()>50) %>% #Only players with more than 50 games played
+  ungroup()
+
+
+wnba
+
+write.csv(wnba, file = "wnba_player_data")
+```
+
+
